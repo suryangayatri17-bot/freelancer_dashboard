@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function Navbar() {
   const { user, logout, theme, toggleTheme } = useAuth();
   const [query, setQuery] = useState('');
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    setShowUserMenu(false);
+    navigate('/login');
+  };
 
   return (
     <header className="bg-white shadow p-4 mb-6 sticky top-0 z-50">
@@ -14,7 +22,7 @@ export default function Navbar() {
           <div>
             <h1 className="text-2xl font-bold">Freelancer Dashboard</h1>
             <p className="text-sm text-gray-500">
-              Welcome, {user.name} • {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+              Welcome, {user?.name} • {user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1)}
             </p>
           </div>
         </div>
@@ -72,9 +80,9 @@ export default function Navbar() {
             {showUserMenu && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50">
                 <div className="p-4 border-b">
-                  <p className="font-semibold">{user.name}</p>
-                  <p className="text-sm text-gray-500">{user.email}</p>
-                  <p className="text-xs text-indigo-600 font-medium mt-1">{user.title}</p>
+                  <p className="font-semibold">{user?.name}</p>
+                  <p className="text-sm text-gray-500">{user?.email}</p>
+                  <p className="text-xs text-indigo-600 font-medium mt-1">{user?.title}</p>
                 </div>
                 <div className="py-2">
                   <button className="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm">
@@ -88,10 +96,7 @@ export default function Navbar() {
                   </button>
                   <div className="border-t my-2"></div>
                   <button
-                    onClick={() => {
-                      logout();
-                      setShowUserMenu(false);
-                    }}
+                    onClick={handleLogout}
                     className="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm text-red-600 font-medium"
                   >
                     🚪 Logout
