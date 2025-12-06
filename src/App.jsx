@@ -6,10 +6,8 @@ import FreelancerDashboard from './pages/FreelancerDashboard';
 import Projects from './pages/Projects';
 import Proposals from './pages/Proposals';
 import Contracts from './pages/Contracts';
-import Login from './pages/Login';
 
-// Protected Route Component
-const ProtectedRoute = ({ children }) => {
+function AppRoutes() {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -20,31 +18,14 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
-  if (!user?.isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return children;
-};
-
-function AppRoutes() {
-  const { user } = useAuth();
-
   return (
     <Routes>
-      {!user?.isAuthenticated ? (
-        <>
-          <Route path="/login" element={<Login />} />
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </>
-      ) : (
-        <Route path="/" element={<FreelancerLayout />}>
-          <Route index element={<FreelancerDashboard />} />
-          <Route path="projects" element={<Projects />} />
-          <Route path="proposals" element={<Proposals />} />
-          <Route path="contracts" element={<Contracts />} />
-        </Route>
-      )}
+      <Route path="/" element={<FreelancerLayout />}>
+        <Route index element={<FreelancerDashboard />} />
+        <Route path="projects" element={<Projects />} />
+        <Route path="proposals" element={<Proposals />} />
+        <Route path="contracts" element={<Contracts />} />
+      </Route>
     </Routes>
   );
 }
