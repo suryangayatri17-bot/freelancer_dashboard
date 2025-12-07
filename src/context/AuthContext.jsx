@@ -1,83 +1,57 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext();
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+
+// Mock user data for UI demo
+const mockUser = {
+  id: 12,
+  name: 'Jane Developer',
+  email: 'jane@example.com',
+  role: 'freelancer',
+  avatar: 'JD',
+  title: 'Senior React Developer',
+  rating: 4.9,
+  bio: '5+ years experience with React, Django, and cloud platforms',
+  isAuthenticated: true,
+  profile_id: 1,
+};
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(mockUser);
   const [theme, setTheme] = useState('light');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  // Check if user is already logged in (token in localStorage)
-  useEffect(() => {
-    const checkAuth = async () => {
-      const token = localStorage.getItem('access_token');
-      if (token) {
-        try {
-          const response = await fetch(`${API_BASE_URL}/profiles/me/`, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          });
-          if (response.ok) {
-            const data = await response.json();
-            setUser({
-              id: data.user_id,
-              name: data.first_name || data.user.username,
-              email: data.user.email,
-              role: data.role,
-              avatar: (data.first_name || data.user.username).substring(0, 2).toUpperCase(),
-              title: data.title || 'Professional',
-              rating: data.rating || 0,
-              bio: data.bio || '',
-              isAuthenticated: true,
-              profile_id: data.id,
-            });
-          } else {
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
-            setUser(null);
-          }
-        } catch (err) {
-          console.error('Auth check failed:', err);
-          setUser(null);
-        }
-      }
-      setLoading(false);
-    };
-
-    checkAuth();
-  }, []);
 
   const login = async (username, password) => {
     setLoading(true);
     setError(null);
-    try {
-      const response = await fetch(`${API_BASE_URL}/token/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
+    // Mock login
+    setUser(mockUser);
+    setLoading(false);
+  };
 
-      if (!response.ok) {
-        throw new Error('Invalid credentials');
-      }
+  const logout = () => {
+    setUser(null);
+  };
 
-      const data = await response.json();
-      localStorage.setItem('access_token', data.access);
-      localStorage.setItem('refresh_token', data.refresh);
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
+  };
 
-      // Fetch user profile
-      const profileResponse = await fetch(`${API_BASE_URL}/profiles/me/`, {
-        headers: {
-          'Authorization': `Bearer ${data.access}`,
-          'Content-Type': 'application/json',
-        },
-      });
+  return (
+    <AuthContext.Provider value={{ user, login, logout, theme, toggleTheme, loading, error }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
 
       if (profileResponse.ok) {
         const profileData = await profileResponse.json();

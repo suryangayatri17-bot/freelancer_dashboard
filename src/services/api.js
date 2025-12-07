@@ -1,103 +1,92 @@
 // src/services/api.js
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+// Mock API service for UI demo - no backend required
 
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('access_token');
-  return {
-    'Content-Type': 'application/json',
-    ...(token && { 'Authorization': `Bearer ${token}` }),
-  };
-};
+const mockProjects = [
+  {
+    id: 'P-101',
+    title: 'React + Tailwind Website',
+    description: 'Build a full-stack e-commerce platform with React and Django',
+    client: 'BrightStart Co.',
+    budget: 1200,
+    status: 'In Progress',
+    progress: 65,
+    due: 'Dec 05, 2025',
+  },
+  {
+    id: 'P-102',
+    title: 'Mobile App UI (Figma)',
+    description: 'Design a mobile app for fitness tracking',
+    client: 'GreenLeaf',
+    budget: 800,
+    status: 'Awaiting Feedback',
+    progress: 40,
+    due: 'Nov 30, 2025',
+  },
+  {
+    id: 'P-103',
+    title: 'E-commerce Backend (Node.js)',
+    description: 'Redesign the admin dashboard for better UX',
+    client: 'MarketHub',
+    budget: 2200,
+    status: 'Pending',
+    progress: 5,
+    due: 'Jan 10, 2026',
+  },
+];
 
-const handleResponse = async (response) => {
-  if (!response.ok) {
-    if (response.status === 401) {
-      // Token expired or invalid
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
-      window.location.href = '/login';
-    }
-    throw new Error(`API Error: ${response.statusText}`);
-  }
-  return response.json();
-};
+const mockProposals = [
+  {
+    id: 'PROP-001',
+    project: 'E-commerce Platform',
+    client: 'BrightStart Co.',
+    amount: 13000,
+    status: 'accepted',
+    timeline: 50,
+  },
+  {
+    id: 'PROP-002',
+    project: 'Mobile App Design',
+    client: 'GreenLeaf',
+    amount: 7500,
+    status: 'pending',
+    timeline: 40,
+  },
+];
+
+const mockContracts = [
+  {
+    id: 'C-001',
+    project: 'E-commerce Platform',
+    client: 'BrightStart Co.',
+    value: 13000,
+    status: 'active',
+    startDate: '2025-11-27',
+    endDate: '2026-01-15',
+  },
+];
 
 export const projectsApi = {
-  list: async () => {
-    const response = await fetch(`${API_BASE_URL}/projects/`, {
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
-  },
-
-  get: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/projects/${id}/`, {
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
-  },
-
-  create: async (data) => {
-    const response = await fetch(`${API_BASE_URL}/projects/`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(data),
-    });
-    return handleResponse(response);
-  },
-
-  update: async (id, data) => {
-    const response = await fetch(`${API_BASE_URL}/projects/${id}/`, {
-      method: 'PUT',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(data),
-    });
-    return handleResponse(response);
-  },
-
-  assignFreelancer: async (id, freelancerId) => {
-    const response = await fetch(`${API_BASE_URL}/projects/${id}/assign_freelancer/`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ freelancer_id: freelancerId }),
-    });
-    return handleResponse(response);
-  },
+  list: async () => Promise.resolve(mockProjects),
+  get: async (id) => Promise.resolve(mockProjects.find(p => p.id === id)),
 };
 
 export const proposalsApi = {
-  list: async () => {
-    const response = await fetch(`${API_BASE_URL}/proposals/`, {
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
-  },
+  list: async () => Promise.resolve(mockProposals),
+};
 
-  get: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/proposals/${id}/`, {
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
-  },
+export const contractsApi = {
+  list: async () => Promise.resolve(mockContracts),
+};
 
-  create: async (data) => {
-    const response = await fetch(`${API_BASE_URL}/proposals/`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(data),
-    });
-    return handleResponse(response);
-  },
-
-  accept: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/proposals/${id}/accept/`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-    });
-    return handleResponse(response);
-  },
-
-  reject: async (id) => {
+export const profilesApi = {
+  me: async () => Promise.resolve({
+    id: 1,
+    user: { id: 12, username: 'freelancer1', email: 'jane@example.com' },
+    role: 'freelancer',
+    title: 'Senior React Developer',
+    rating: 4.9,
+  }),
+};
     const response = await fetch(`${API_BASE_URL}/proposals/${id}/reject/`, {
       method: 'POST',
       headers: getAuthHeaders(),
