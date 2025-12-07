@@ -11,7 +11,7 @@ export default function Navbar() {
   const handleLogout = () => {
     logout();
     setShowUserMenu(false);
-    navigate('/login');
+    window.location.reload();
   };
 
   return (
