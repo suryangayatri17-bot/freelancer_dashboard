@@ -1,5 +1,0 @@
-Name: Gayathri suryan
-Email: suryan@freelancer.com
-Role: Freelancer Dashboard
-Title: Senior Frontend Developer
-Status: ✅ Authenticated
